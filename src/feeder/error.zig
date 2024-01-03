@@ -1,0 +1,3 @@
+const FeederError = error{
+    OutOfBound,
+};
