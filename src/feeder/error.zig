@@ -1,3 +1,3 @@
-const FeederError = error{
+pub const Error = error{
     OutOfBound,
 };

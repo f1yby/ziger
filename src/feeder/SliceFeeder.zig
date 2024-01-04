@@ -1,7 +1,5 @@
 const std = @import("std");
-const err = @import("error.zig");
-const FeederError = err.FeederError;
-const comma = ",";
+const Error = @import("error.zig").Error;
 
 fn SliceFeeder(comptime T: type) type {
     return struct {
@@ -11,27 +9,27 @@ fn SliceFeeder(comptime T: type) type {
                 .iter = slice,
             };
         }
-        fn peek(self: SliceFeeder(T)) FeederError!T {
+        fn peek(self: SliceFeeder(T)) Error!T {
             if (self.empty()) {
-                return FeederError.OutOfBound;
+                return Error.OutOfBound;
             }
             return self.iter[0];
         }
-        fn peek_cn(self: SliceFeeder(T), comptime n: usize) FeederError!*const [n]T {
+        fn peek_cn(self: SliceFeeder(T), comptime n: usize) Error!*const [n]T {
             if (!self.next_n_in_bound(n)) {
-                return FeederError.OutOfBound;
+                return Error.OutOfBound;
             }
             return self.iter[0..n];
         }
-        fn peek_n(self: SliceFeeder(T), n: usize) FeederError![]const T {
+        fn peek_n(self: SliceFeeder(T), n: usize) Error![]const T {
             if (!self.next_n_in_bound(n)) {
-                return FeederError.OutOfBound;
+                return Error.OutOfBound;
             }
             return self.iter[0..n];
         }
-        fn forward_n(self: *SliceFeeder(T), n: usize) FeederError!void {
+        fn forward_n(self: *SliceFeeder(T), n: usize) Error!void {
             if (!self.next_n_in_bound(n)) {
-                return FeederError.OutOfBound;
+                return Error.OutOfBound;
             }
             self.*.iter = self.iter[n..];
         }
@@ -84,7 +82,7 @@ test "forward test" {
     }
     {
         var sf = SliceFeeder(u8).init("hello");
-        try std.testing.expectError(FeederError.OutOfBound, sf.forward_n(6));
+        try std.testing.expectError(Error.OutOfBound, sf.forward_n(6));
     }
     {
         var sf = SliceFeeder(u8).init("");
